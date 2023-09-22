@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import data from "../utils/data.json";
 import { Button } from "../components/Button";
 import { Card } from "../components/Card";
@@ -6,6 +6,12 @@ import { Navbar } from "../components/Navbar";
 
 export const LandingPage = () => {
   const [dataList, setDataList] = useState(data);
+
+  // FOR FILTERING
+  const [dataFilter, setDataFilter] = useState(dataList);
+  const [buttonClick, setButtonClick] = useState(false);
+
+  const [search, setSearch] = useState();
 
   // CEK ID TERAKHIR
   const lastId = dataList.length > 0 ? dataList[dataList.length - 1].id : null;
@@ -51,22 +57,35 @@ export const LandingPage = () => {
     );
   };
 
+  // SEARCH TODO
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    setButtonClick(true);
+    setDataFilter(dataList.filter((value) => value.task.toLowerCase().includes(search.toLowerCase())));
+  };
+
   // BUTTON FILTERING
   const showAll = () => {
-    setDataList(dataList);
+    setButtonClick(false);
+    setDataFilter(dataList);
   };
 
   const showDone = () => {
-    setDataList((dataList) => dataList.filter((value) => value.complete === true));
+    setButtonClick(true);
+    setDataFilter(dataList.filter((value) => value.complete === true));
   };
 
   const showTodo = () => {
-    setDataList((dataList) => dataList.filter((value) => value.complete === false));
+    setButtonClick(true);
+    setDataFilter(dataList.filter((value) => value.complete === false));
   };
 
   // BUTTON DELETE
   const deleteDone = () => {
-    setDataList((dataList) => dataList.filter((value) => value.complete !== true));
+    setDataList((dataList) =>
+      dataList.filter((value) => value.complete !== true)
+    );
   };
 
   const deleteAll = () => {
@@ -105,32 +124,40 @@ export const LandingPage = () => {
               placeholder="Enter new task"
             />
           </div>
-          <button className="w-full text-center py-2 text-white rounded shadow bg-[#F79700] hover:bg-[#ED8200]">Save</button>
+          <button className="w-full text-center py-2 text-white rounded shadow bg-[#F79700] hover:bg-[#ED8200]">
+            Save
+          </button>
         </form>
 
         <hr className="my-7" />
 
         <div className="flex justify-between gap-10 mb-10">
-          <div className="flex items-center relative w-1/4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              className="w-4 h-4 absolute stroke-purple-500 left-2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-              />
-            </svg>
+          <form
+            className="flex items-center relative w-1/4"
+            onSubmit={handleSearch}
+          >
             <input
               type="text"
-              className="w-full py-2 ps-8 pe-2 text-sm text-purple-600 border-b-2 border-purple-300 rounded placeholder-purple-400 outline-none shadow"
+              className="w-full py-2 ps-2 pe-8 text-sm text-purple-600 border-b-2 border-purple-300 rounded placeholder-purple-400 outline-none shadow"
               placeholder="find your ToDo"
+              onChange={(e) => setSearch(e.target.value)}
             />
-          </div>
+            <button className="absolute right-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                className="w-4 h-4 stroke-purple-500 hover:stroke-purple-700 cursor-pointer"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                />
+              </svg>
+            </button>
+          </form>
           <div className="w-3/5 flex items-center gap-8 text-sm">
             <div className="font-semibold text-base text-[#16A3B5]">Filter</div>
             <Button
@@ -158,17 +185,29 @@ export const LandingPage = () => {
         </div>
 
         <div>
-          {dataList.map((value, index) => (
-            <Card
-              key={index}
-              id={value.id}
-              title={value.task}
-              status={value.complete}
-              deleteItem={handleDeleteItem}
-              editItem={handleEditItem}
-              checkItem={handleCheck}
-            />
-          ))}
+          {buttonClick
+            ? dataFilter.map((value, index) => (
+                <Card
+                  key={index}
+                  id={value.id}
+                  title={value.task}
+                  status={value.complete}
+                  deleteItem={handleDeleteItem}
+                  editItem={handleEditItem}
+                  checkItem={handleCheck}
+                />
+              ))
+            : dataList.map((value, index) => (
+                <Card
+                  key={index}
+                  id={value.id}
+                  title={value.task}
+                  status={value.complete}
+                  deleteItem={handleDeleteItem}
+                  editItem={handleEditItem}
+                  checkItem={handleCheck}
+                />
+              ))}
         </div>
 
         <div className="flex gap-6 mt-4">
