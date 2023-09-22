@@ -7,12 +7,6 @@ import { Navbar } from "../components/Navbar";
 export const LandingPage = () => {
   const [dataList, setDataList] = useState(data);
 
-  const [originalData, setOriginalData] = useState(data);
-
-  useEffect(() => {
-    setOriginalData(data);
-  }, []);
-
   // CEK ID TERAKHIR
   const lastId = dataList.length > 0 ? dataList[dataList.length - 1].id : null;
 
@@ -57,25 +51,26 @@ export const LandingPage = () => {
     );
   };
 
-  // BUTTON FUNCTION
+  // BUTTON FILTERING
   const showAll = () => {
-    setDataList(originalData);
+    setDataList(dataList);
   };
 
   const showDone = () => {
-    setDataList(originalData.filter((value) => value.complete === true));
+    setDataList((dataList) => dataList.filter((value) => value.complete === true));
   };
 
   const showTodo = () => {
-    setDataList(originalData.filter((value) => value.complete === false));
+    setDataList((dataList) => dataList.filter((value) => value.complete === false));
   };
 
+  // BUTTON DELETE
   const deleteDone = () => {
-    setDataList(originalData.filter((value) => value.complete !== true));
+    setDataList((dataList) => dataList.filter((value) => value.complete !== true));
   };
 
   const deleteAll = () => {
-    setDataList([]);
+    setDataList((dataList) => []);
   };
 
   return (
@@ -110,11 +105,7 @@ export const LandingPage = () => {
               placeholder="Enter new task"
             />
           </div>
-          <Button
-            name="Save"
-            bgColor="bg-[#F79700]"
-            bgHover="hover:bg-[#ED8200]"
-          />
+          <button className="w-full text-center py-2 text-white rounded shadow bg-[#F79700] hover:bg-[#ED8200]">Save</button>
         </form>
 
         <hr className="my-7" />
